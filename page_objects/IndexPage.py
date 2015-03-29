@@ -1,18 +1,18 @@
 # coding: utf-8
 __author__ = 'max'
 
-import AbstractPage
+from AbstractPage import AbstractPage
 
 
-class MainPage(AbstractPage):
+class IndexPage(AbstractPage):
     LOGIN_BTN = u'//a[text()="Вход для участников"]'
     LOGIN_INP = u'//input[@name="login"]'
     PASSWORD_INP = u'//input[@name="password"]'
     SUBMIT_BTN = u'//span[text()="Войти"]'
-    USERNAME = u'//a[class="username"]'
+    USERNAME = u'//a[@class="username"]'
 
     def __init__(self, driver):
-        super(MainPage, self).__init__(driver)
+        super(IndexPage, self).__init__(driver)
 
     def _show_login_form(self):
         self.driver.find_element_by_xpath(self.LOGIN_BTN).click()

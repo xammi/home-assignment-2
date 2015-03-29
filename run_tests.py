@@ -4,7 +4,7 @@ import os
 import sys
 import unittest
 
-from tests.MainTest import MainTestCase
+from tests.AuthTest import AuthTestCase
 
 if __name__ == '__main__':
 
@@ -12,7 +12,7 @@ if __name__ == '__main__':
         sys.exit('Password not found')
 
     suite = unittest.TestSuite((
-        unittest.makeSuite(MainTestCase),
+        unittest.makeSuite(AuthTestCase),
     ))
     result = unittest.TextTestRunner().run(suite)
     sys.exit(not result.wasSuccessful())

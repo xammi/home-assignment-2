@@ -6,7 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 
-class AbstractTest(unittest.TestCase):
+class AbstractTestCase(unittest.TestCase):
     BROWSER_LOC = "TTHA2BROWSER"
     PASSWORD_LOC = "TTHA2PASSWORD"
 
