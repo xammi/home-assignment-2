@@ -1,7 +1,7 @@
 # coding: utf-8
 __author__ = 'max'
 
-from AbstractPage import AbstractPage
+from abstract import AbstractPage
 
 
 class IndexPage(AbstractPage):
@@ -27,3 +27,8 @@ class IndexPage(AbstractPage):
         return self.wait(
             lambda driver: driver.find_element_by_xpath(self.USERNAME)
         )
+
+
+class MainPage(AbstractPage):
+    def __init__(self, driver):
+        super(MainPage, self).__init__(driver)

@@ -2,8 +2,7 @@
 __author__ = 'max'
 
 import os
-from AbstractTest import AbstractTestCase
-from page_objects.IndexPage import IndexPage
+from abstract import AbstractTestCase
 
 
 class AuthTestCase(AbstractTestCase):
@@ -12,8 +11,5 @@ class AuthTestCase(AbstractTestCase):
         username = u'Господин Почтмейстер'
         password = os.environ.get(self.PASSWORD_LOC)
 
-        mainpage = IndexPage(self.driver)
-        mainpage.open()
-
-        item = mainpage.login(email, password)
+        item = self.authenticate(email, password)
         self.assertEqual(username, item.text)
