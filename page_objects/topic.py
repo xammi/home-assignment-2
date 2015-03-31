@@ -1,4 +1,6 @@
 # coding: utf-8
+from selenium.webdriver import ActionChains
+
 __author__ = 'max'
 
 from abstract import AbstractPage
@@ -8,9 +10,9 @@ class CreateTopicPage(AbstractPage):
     PATH = '/blog/topic/create/'
 
     TITLE_INP = u'//input[@name="title"]'
-    SHORT_TEXT_INP = u'//textarea[@name="text_short"]'
-    TEXT_INP = u'//textarea[@id="id_text"]'
-    SUBMIT_BTN = u'//button[text()="Создать"]'
+    SHORT_TEXT_INP = u'//*[@id="content"]/div/div[1]/form/div/div[3]'
+    TEXT_INP = u'//*[@id="content"]/div/div[1]/form/div/div[6]'
+    SUBMIT_BTN = u'//button[@type="submit"]'
 
     BLOG_SELECT = '#id_blog_chzn>.chzn-single'
     BLOG_OPTION = '#id_blog_chzn .active-result:nth-child(%s)'
@@ -21,14 +23,20 @@ class CreateTopicPage(AbstractPage):
         super(CreateTopicPage, self).__init__(driver)
 
     def _select_blog_by_id(self, blog_id):
-        self.driver.find_element_by_css_selector(self.BLOG_SELECT).click()
-        self.driver.find_element_by_css_selector(self.BLOG_OPTION % blog_id).click()
+        if blog_id > 0:
+            self.driver.find_element_by_css_selector(self.BLOG_SELECT).click()
+            self.driver.find_element_by_css_selector(self.BLOG_OPTION % blog_id).click()
 
     def create(self, title, blog_id, short_text, text):
         self._select_blog_by_id(blog_id)
         self.driver.find_element_by_xpath(self.TITLE_INP).send_keys(title)
-        self.driver.find_element_by_xpath(self.SHORT_TEXT_INP).send_keys(short_text)
-        self.driver.find_element_by_xpath(self.TEXT_INP).send_keys(text)
+
+        self.driver.find_element_by_xpath(self.SHORT_TEXT_INP).click()
+        ActionChains(self.driver).send_keys(short_text).perform()
+
+        self.driver.find_element_by_xpath(self.TEXT_INP).click()
+        ActionChains(self.driver).send_keys(text).perform()
+
         self.driver.find_element_by_xpath(self.SUBMIT_BTN).submit()
 
     def has_error(self):

@@ -5,7 +5,7 @@ import sys
 import unittest
 
 from tests.test_auth import AuthTestCase
-from tests.test_topic import TopicTestCase
+from tests.test_topic import CreateTopicTestCase
 
 if __name__ == '__main__':
 
@@ -13,8 +13,8 @@ if __name__ == '__main__':
         sys.exit('Password not found')
 
     suite = unittest.TestSuite((
-        unittest.makeSuite(AuthTestCase),
-        unittest.makeSuite(TopicTestCase),
+        # unittest.makeSuite(AuthTestCase),
+        # unittest.makeSuite(CreateTopicTestCase),
     ))
     result = unittest.TextTestRunner().run(suite)
     sys.exit(not result.wasSuccessful())
