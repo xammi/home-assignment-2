@@ -1,10 +1,9 @@
 # coding: utf-8
-from page_objects.blog import BlogPage
-
 __author__ = 'max'
 
 from abstract import AbstractTestCase
 from page_objects.topic import CreateTopicPage, TopicPage, Tags
+from page_objects.blog import BlogPage
 
 
 def not_created(method):
@@ -113,35 +112,57 @@ class CreateTopicTestCase(AbstractTestCase):
         blogpage = BlogPage(self.driver)
         self.assertNotEqual(blogpage.get_upper_topic_title(), self.DEFAULT_TITLE)
 
+    class Meta:
+        @staticmethod
+        def base_test_tag(self, tag):
+            topicpage = CreateTopicPage(self.driver)
+            topicpage.open()
+            topicpage.click_tag(tag['selector'])
+            self.assertEqual(topicpage.get_short_text(), tag['markdown'])
+
+        @staticmethod
+        def base_test_create_tag(self, tag):
+            topicpage = CreateTopicPage(self.driver)
+            topicpage.open()
+            topicpage.create(self.DEFAULT_TITLE, self.DEFAULT_BLOG, self.DEFAULT_SHORT_TEXT, tag['text'])
+
+            topicpage = TopicPage(self.driver)
+            self.assertIn(tag['html'], topicpage.get_html_content())
+
     @not_created
     def test_tag_bold(self):
-        topicpage = CreateTopicPage(self.driver)
-        topicpage.open()
-        topicpage.click_tag(Tags.BOLD['selector'])
-        self.assertEqual(topicpage.get_short_text(), Tags.BOLD['markup'])
+        self.Meta.base_test_tag(self, Tags.BOLD)
 
     def test_create_tag_bold(self):
-        topicpage = CreateTopicPage(self.driver)
-        topicpage.open()
-        topicpage.create(self.DEFAULT_TITLE, self.DEFAULT_BLOG, self.DEFAULT_SHORT_TEXT, Tags.BOLD['text'])
-
-        topicpage = TopicPage(self.driver)
-        self.assertIn(Tags.BOLD['html'], topicpage.get_html_content())
+        self.Meta.base_test_create_tag(self, Tags.BOLD)
 
     @not_created
     def test_tag_italic(self):
-        topicpage = CreateTopicPage(self.driver)
-        topicpage.open()
-        topicpage.click_tag(Tags.ITALIC['selector'])
-        self.assertEqual(topicpage.get_short_text(), Tags.ITALIC['markup'])
+        self.Meta.base_test_tag(self, Tags.ITALIC)
 
     def test_create_tag_italic(self):
-        topicpage = CreateTopicPage(self.driver)
-        topicpage.open()
-        topicpage.create(self.DEFAULT_TITLE, self.DEFAULT_BLOG, self.DEFAULT_SHORT_TEXT, Tags.ITALIC['text'])
+        self.Meta.base_test_create_tag(self, Tags.ITALIC)
 
-        topicpage = TopicPage(self.driver)
-        self.assertIn(Tags.ITALIC['html'], topicpage.get_html_content())
+    @not_created
+    def test_tag_quotes(self):
+        self.Meta.base_test_tag(self, Tags.QUOTES)
+
+    def test_create_tag_quotes(self):
+        self.Meta.base_test_create_tag(self, Tags.QUOTES)
+
+    @not_created
+    def test_tag_list(self):
+        self.Meta.base_test_tag(self, Tags.LIST)
+
+    def test_create_tag_list(self):
+        self.Meta.base_test_create_tag(self, Tags.LIST)
+
+    @not_created
+    def test_tag_num_list(self):
+        self.Meta.base_test_tag(self, Tags.NUM_LIST)
+
+    def test_create_tag_num_list(self):
+        self.Meta.base_test_create_tag(self, Tags.NUM_LIST)
 
 
 class RemoveTopicTestCase(AbstractTestCase):

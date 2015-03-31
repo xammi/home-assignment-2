@@ -7,18 +7,36 @@ __author__ = 'max'
 from abstract import AbstractPage
 
 
-class Tags(object):
+class Tags:
     BOLD = {
         'selector': '.markdown-editor-icon-bold',
         'text': u'**Жирный текст**',
-        'markup': u'****',
+        'markdown': u'****',
         'html': u'<strong>Жирный текст</strong>'
-    },
+    }
     ITALIC = {
         'selector': '.markdown-editor-icon-italic',
         'text': u'*Курсив*',
-        'markup': u'**',
+        'markdown': u'**',
         'html': u'<em>Курсив</em>'
+    }
+    QUOTES = {
+        'selector': '.markdown-editor-icon-quote',
+        'text': u'> Цитата',
+        'markdown': u'> ',
+        'html': u'&gt; Цитата'
+    }
+    LIST = {
+        'selector': '.markdown-editor-icon-unordered-list',
+        'text': u'* Список',
+        'markdown': u'* ',
+        'html': u'<ul>\n<li>Список</li>\n</ul>'
+    }
+    NUM_LIST = {
+        'selector': '.markdown-editor-icon-ordered-list',
+        'text': u'1. Нумерованный список',
+        'markdown': u'1. ',
+        'html': u'<ol>\n<li>Нумерованный список</li>\n</ol>'
     }
 
 
