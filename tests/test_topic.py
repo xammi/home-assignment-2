@@ -1,4 +1,6 @@
 # coding: utf-8
+from page_objects.blog import BlogPage
+
 __author__ = 'max'
 
 from abstract import AbstractTestCase
@@ -26,6 +28,9 @@ class CreateTopicTestCase(AbstractTestCase):
         self.assertEqual(topicpage.get_title(), self.DEFAULT_TITLE)
         self.assertEqual(topicpage.get_content(), self.DEFAULT_TEXT)
 
+        blogpage = BlogPage(self.driver)
+        blogpage.remove_upper()
+
     def test_create_title_boundary(self):
         title = 'x' * self.TITLE_BOUNDARY
 
@@ -35,6 +40,9 @@ class CreateTopicTestCase(AbstractTestCase):
 
         topicpage = TopicPage(self.driver)
         self.assertEqual(topicpage.get_title(), title)
+
+        blogpage = BlogPage(self.driver)
+        blogpage.remove_upper()
 
     def test_create_without_blog(self):
         topicpage = CreateTopicPage(self.driver)
@@ -67,3 +75,17 @@ class CreateTopicTestCase(AbstractTestCase):
         topicpage.open()
         topicpage.create(title, self.DEFAULT_BLOG, self.DEFAULT_SHORT_TEXT, self.DEFAULT_TEXT)
         self.assertTrue(topicpage.has_error())
+
+
+class RemoveTopicTestCase(AbstractTestCase):
+    def setUp(self):
+        super(RemoveTopicTestCase, self).setUp()
+        self.login()
+
+    def test_remove_topic_ok(self):
+        blogpage = BlogPage(self.driver)
+        blogpage.open()
+
+        upper_title = blogpage.get_upper_topic_title()
+        blogpage.remove_upper()
+        self.assertNotEqual(blogpage.get_upper_topic_title(), upper_title)
