@@ -14,7 +14,7 @@ if __name__ == '__main__':
 
     suite = unittest.TestSuite((
         # unittest.makeSuite(AuthTestCase),
-        # unittest.makeSuite(CreateTopicTestCase),
+        unittest.makeSuite(CreateTopicTestCase),
         # unittest.makeSuite(RemoveTopicTestCase)
     ))
     result = unittest.TextTestRunner().run(suite)
