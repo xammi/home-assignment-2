@@ -1,10 +1,11 @@
 # coding: utf-8
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver import ActionChains
-
 __author__ = 'max'
 
 from abstract import AbstractPage
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver import ActionChains
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 
 class Tags:
@@ -38,6 +39,24 @@ class Tags:
         'markdown': u'1. ',
         'html': u'<ol>\n<li>Нумерованный список</li>\n</ol>'
     }
+    IMAGE = {
+        'selector': '//*[contains(@class, "markdown-editor-icon-image")][1]',
+        'text': '![](image.png)',
+        'markdown': '![](',
+        'html': '<img'
+    }
+    LINK = {
+        'selector': '//*[contains(@class, "markdown-editor-icon-link")][1]',
+        'text': '[name](http://test.ru "title")',
+        'markdown': '[](http://test.ru)',
+        'html': '<a href="http://test.ru'
+    }
+    LINK_PROFILE = {
+        'selector': '//*[contains(@class, "markdown-editor-icon-link")][2]',
+        'text': u'[Господин Почтмейстер](/profile/g.pochtmejster/)',
+        'markdown': '[Господин Почтмейстер](/profile/g.pochtmejster/)',
+        'html': '<a href="/profile/g.pochtmejster/">'
+    }
 
 
 class CreateTopicPage(AbstractPage):
@@ -56,11 +75,25 @@ class CreateTopicPage(AbstractPage):
     FORBID_COMMENT_CHB = '#id_forbid_comment'
     PUBLISH_CHB = '#id_publish'
 
+    SEARCH_USER_INP = '#search-user-login-popup'
+    USER_PROFILE_LINK = '.realname>.user_profile_path'
+
+    ADD_POLL_CHB = '//*[@name="add_poll"]'
+    POLL_QUESTION_INP = '#id_question'
+    POLL_ANSWER1_INP = '#id_form-0-answer'
+    POLL_ANSWER2_INP = '#id_form-1-answer'
+    POLL_ANSWER3_INP = '//*[contains(@id, "id_form-2-answer")][2]'
+    ADD_POLL_ANSWER = '.add-poll-answer'
+    DELETE_POLL_ANSWER = '//*[@id="question_list"]/li[3]/a'
+
     def __init__(self, driver):
         super(CreateTopicPage, self).__init__(driver)
 
-    def click_tag(self, selector):
-        self.driver.find_element_by_css_selector(selector).click()
+    def click_tag(self, selector, by_xpath):
+        if by_xpath:
+            self.driver.find_element_by_xpath(selector).click()
+        else:
+            self.driver.find_element_by_css_selector(selector).click()
 
     def _select_blog_by_id(self, blog_id):
         if blog_id > 0:
@@ -93,6 +126,30 @@ class CreateTopicPage(AbstractPage):
     def get_short_text(self):
         return self.wait(
             lambda driver: driver.find_element_by_xpath(self.SHORT_TEXT_GET).text
+        )
+
+    def set_profile(self, profile_name):
+        self.driver.find_element_by_css_selector(self.SEARCH_USER_INP).send_keys(profile_name)
+        self.wait(EC.presence_of_all_elements_located((By.CSS_SELECTOR, self.USER_PROFILE_LINK)))
+        self.wait(
+            lambda driver: driver.find_element_by_css_selector(self.USER_PROFILE_LINK).is_displayed()
+        )
+        self.driver.find_element_by_css_selector(self.USER_PROFILE_LINK).click()
+
+    #--------------polls----------------------
+
+    def set_add_poll_true(self):
+        self.driver.find_element_by_xpath(self.ADD_POLL_CHB).click()
+
+    def add_answer_for_poll(self):
+        self.driver.find_element_by_css_selector(self.ADD_POLL_ANSWER).click()
+
+    def delete_answer_for_poll(self):
+        self.driver.find_element_by_css_selector(self.DELETE_POLL_ANSWER).click()
+
+    def new_answer_is_displayed(self):
+        self.wait(
+            lambda driver: driver.find_element_by_css_selector(self.POLL_ANSWER3_INP).is_displayed()
         )
 
 

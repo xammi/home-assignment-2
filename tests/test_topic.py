@@ -1,4 +1,6 @@
 # coding: utf-8
+import os
+
 __author__ = 'max'
 
 from abstract import AbstractTestCase
@@ -20,6 +22,14 @@ class CreateTopicTestCase(AbstractTestCase):
     DEFAULT_SHORT_TEXT = u'Короткое описание'
     DEFAULT_TEXT = u'Полное описание топика'
     DEFAULT_BLOG = 2
+
+    PATH_TO_IMAGE = os.path.dirname(__file__) + '/imgs/img.jpg'
+    LINK = "http://test.ru"
+    PROFILE_NAME = u'Почтмейстер'
+
+    POLL_QUESTION = u'Вопрос для голосования'
+    POLL_ANSWER_1 = u'Answer1'
+    POLL_ANSWER_2 = u'Answer2'
 
     def setUp(self):
         super(CreateTopicTestCase, self).setUp()
@@ -114,11 +124,18 @@ class CreateTopicTestCase(AbstractTestCase):
 
     class Meta:
         @staticmethod
-        def base_test_tag(self, tag):
+        def base_test_tag(self, tag, equal=True, by_xpath=False, alert_text=None):
             topicpage = CreateTopicPage(self.driver)
             topicpage.open()
-            topicpage.click_tag(tag['selector'])
-            self.assertEqual(topicpage.get_short_text(), tag['markdown'])
+            topicpage.click_tag(tag['selector'], by_xpath)
+
+            if alert_text:
+                topicpage.set_text_to_alert(alert_text)
+
+            if equal:
+                self.assertEqual(tag['markdown'], topicpage.get_short_text())
+            else:
+                self.assertIn(tag['markdown'], topicpage.get_short_text())
 
         @staticmethod
         def base_test_create_tag(self, tag):
@@ -163,6 +180,54 @@ class CreateTopicTestCase(AbstractTestCase):
 
     def test_create_tag_num_list(self):
         self.Meta.base_test_create_tag(self, Tags.NUM_LIST)
+
+    @not_created
+    def test_tag_image(self):
+        self.Meta.base_test_tag(self, Tags.IMAGE, equal=False, by_xpath=True, alert_text=self.PATH_TO_IMAGE)
+
+    def test_tag_create_image(self):
+        self.Meta.base_test_create_tag(self, Tags.IMAGE)
+
+    @not_created
+    def test_tag_link(self):
+        self.Meta.base_test_tag(self, Tags.LINK, equal=False,  by_xpath=True, alert_text=self.LINK)
+
+    def test_tag_create_link(self):
+        self.Meta.base_test_create_tag(self, Tags.LINK)
+
+    @not_created
+    def test_tag_link_profile(self):
+        topicpage = CreateTopicPage(self.driver)
+        topicpage.open()
+        topicpage.click_tag(Tags.LINK_PROFILE['selector'], True)
+        topicpage.set_profile(self.PROFILE_NAME)
+        self.assertIn(Tags.LINK_PROFILE['markdown'], topicpage.get_short_text())
+
+    def test_tag_create_link_profile(self):
+        self.Meta.base_test_create_tag(self, Tags.LINK_PROFILE)
+
+    # def test_create_poll(self):
+    #     topicpage = CreateTopicPage(self.driver)
+    #     topicpage.open()
+    #     topicpage.create(self.DEFAULT_TITLE, self.DEFAULT_BLOG, self.DEFAULT_SHORT_TEXT, self.DEFAULT_TEXT,
+    #                      polls=[self.POLL_QUESTION, self.POLL_ANSWER_1, self.POLL_ANSWER_2])
+    #
+    #     topicpage = TopicPage(self.driver)
+    #     answers = topicpage.get_poll_answers()
+    #     self.assertIn(answers[0], self.POLL_ANSWER_1)
+    #     self.assertIn(answers[1], self.POLL_ANSWER_2)
+
+    @not_created
+    def test_add_poll_answer(self):
+        topicpage = CreateTopicPage(self.driver)
+        topicpage.open()
+
+        topicpage.set_add_poll_true()
+        topicpage.add_answer_for_poll()
+        self.assertTrue(topicpage.new_answer_is_displayed())
+
+        topicpage.delete_answer_for_poll()
+        self.assertFalse(topicpage.new_answer_is_displayed())
 
 
 class RemoveTopicTestCase(AbstractTestCase):
