@@ -13,8 +13,8 @@ if __name__ == '__main__':
         sys.exit('Password not found')
 
     suite = unittest.TestSuite((
-        # unittest.makeSuite(AuthTestCase),
-        # unittest.makeSuite(CreateTopicTestCase),
+        unittest.makeSuite(AuthTestCase),
+        unittest.makeSuite(CreateTopicTestCase),
         unittest.makeSuite(RemoveTopicTestCase)
     ))
     result = unittest.TextTestRunner().run(suite)
