@@ -2,7 +2,7 @@
 __author__ = 'max'
 
 from abstract import AbstractPage
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -100,7 +100,7 @@ class CreateTopicPage(AbstractPage):
             self.driver.find_element_by_css_selector(self.BLOG_SELECT).click()
             self.driver.find_element_by_css_selector(self.BLOG_OPTION % blog_id).click()
 
-    def create(self, title, blog_id, short_text, text, comments=True, publish=True):
+    def create(self, title, blog_id, short_text, text, comments=True, publish=True, polls=None):
         self._select_blog_by_id(blog_id)
         self.driver.find_element_by_xpath(self.TITLE_INP).send_keys(title)
 
@@ -115,6 +115,12 @@ class CreateTopicPage(AbstractPage):
 
         if not publish:
             self.driver.find_element_by_css_selector(self.PUBLISH_CHB).click()
+
+        self.set_add_poll_true()
+        if polls:
+            self.driver.find_element_by_css_selector(self.POLL_QUESTION_INP).send_keys(polls[0])
+            self.driver.find_element_by_css_selector(self.POLL_ANSWER1_INP).send_keys(polls[1])
+            self.driver.find_element_by_css_selector(self.POLL_ANSWER2_INP).send_keys(polls[2])
 
         self.driver.find_element_by_xpath(self.SUBMIT_BTN).submit()
 
@@ -145,12 +151,19 @@ class CreateTopicPage(AbstractPage):
         self.driver.find_element_by_css_selector(self.ADD_POLL_ANSWER).click()
 
     def delete_answer_for_poll(self):
-        self.driver.find_element_by_css_selector(self.DELETE_POLL_ANSWER).click()
+        self.driver.find_element_by_xpath(self.DELETE_POLL_ANSWER).click()
 
-    def new_answer_is_displayed(self):
-        self.wait(
-            lambda driver: driver.find_element_by_css_selector(self.POLL_ANSWER3_INP).is_displayed()
-        )
+    def new_answer_is_displayed(self, wait=True):
+        try:
+            if wait:
+                return self.wait(
+                    lambda driver: driver.find_element_by_xpath(self.POLL_ANSWER3_INP).is_displayed()
+                )
+            else:
+                return self.driver.find_element_by_xpath(self.POLL_ANSWER3_INP).is_displayed()
+
+        except Exception:
+            return False
 
 
 class TopicPage(AbstractPage):
@@ -162,6 +175,9 @@ class TopicPage(AbstractPage):
     TOPIC_BLOG = 'topic-blog'
 
     COMMENT_ADD_LINK = 'comment-add-link'
+
+    ANSWER_1_LBL = '//*[@class=("poll-vote")]/li[1]/label'
+    ANSWER_2_LBL = '//*[@class=("poll-vote")]/li[2]/label'
 
     def __init__(self, driver):
         super(TopicPage, self).__init__(driver)
@@ -188,3 +204,9 @@ class TopicPage(AbstractPage):
         except NoSuchElementException:
             return False
         return True
+
+    def get_poll_answers(self):
+        return [
+            self.driver.find_element_by_xpath(self.ANSWER_1_LBL).text,
+            self.driver.find_element_by_xpath(self.ANSWER_2_LBL).text,
+        ]

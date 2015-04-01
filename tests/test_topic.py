@@ -206,16 +206,16 @@ class CreateTopicTestCase(AbstractTestCase):
     def test_tag_create_link_profile(self):
         self.Meta.base_test_create_tag(self, Tags.LINK_PROFILE)
 
-    # def test_create_poll(self):
-    #     topicpage = CreateTopicPage(self.driver)
-    #     topicpage.open()
-    #     topicpage.create(self.DEFAULT_TITLE, self.DEFAULT_BLOG, self.DEFAULT_SHORT_TEXT, self.DEFAULT_TEXT,
-    #                      polls=[self.POLL_QUESTION, self.POLL_ANSWER_1, self.POLL_ANSWER_2])
-    #
-    #     topicpage = TopicPage(self.driver)
-    #     answers = topicpage.get_poll_answers()
-    #     self.assertIn(answers[0], self.POLL_ANSWER_1)
-    #     self.assertIn(answers[1], self.POLL_ANSWER_2)
+    def test_create_poll(self):
+        topicpage = CreateTopicPage(self.driver)
+        topicpage.open()
+        topicpage.create(self.DEFAULT_TITLE, self.DEFAULT_BLOG, self.DEFAULT_SHORT_TEXT, self.DEFAULT_TEXT,
+                         polls=[self.POLL_QUESTION, self.POLL_ANSWER_1, self.POLL_ANSWER_2])
+
+        topicpage = TopicPage(self.driver)
+        answers = topicpage.get_poll_answers()
+        self.assertIn(answers[0], self.POLL_ANSWER_1)
+        self.assertIn(answers[1], self.POLL_ANSWER_2)
 
     @not_created
     def test_add_poll_answer(self):
@@ -227,7 +227,7 @@ class CreateTopicTestCase(AbstractTestCase):
         self.assertTrue(topicpage.new_answer_is_displayed())
 
         topicpage.delete_answer_for_poll()
-        self.assertFalse(topicpage.new_answer_is_displayed())
+        self.assertFalse(topicpage.new_answer_is_displayed(wait=False))
 
 
 class RemoveTopicTestCase(AbstractTestCase):
