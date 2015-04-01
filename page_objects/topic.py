@@ -54,7 +54,7 @@ class Tags:
     LINK_PROFILE = {
         'selector': '//*[contains(@class, "markdown-editor-icon-link")][2]',
         'text': u'[Господин Почтмейстер](/profile/g.pochtmejster/)',
-        'markdown': '[Господин Почтмейстер](/profile/g.pochtmejster/)',
+        'markdown': u'[Господин Почтмейстер](/profile/g.pochtmejster/)',
         'html': '<a href="/profile/g.pochtmejster/">'
     }
 
@@ -63,9 +63,9 @@ class CreateTopicPage(AbstractPage):
     PATH = '/blog/topic/create/'
 
     TITLE_INP = u'//input[@name="title"]'
-    SHORT_TEXT_INP = u'//*[@id="content"]/div/div[1]/form/div/div[3]'
+    SHORT_TEXT_INP = u'//div[@class="CodeMirror-scroll"]'
     SHORT_TEXT_GET = u'//div[@class="CodeMirror-code"]/pre'
-    TEXT_INP = u'//*[@id="content"]/div/div[1]/form/div/div[6]'
+    TEXT_INP = u'//div[@class="CodeMirror-scroll"]'
     SUBMIT_BTN = u'//button[@type="submit"]'
 
     BLOG_SELECT = '#id_blog_chzn>.chzn-single'
@@ -104,11 +104,11 @@ class CreateTopicPage(AbstractPage):
         self._select_blog_by_id(blog_id)
         self.driver.find_element_by_xpath(self.TITLE_INP).send_keys(title)
 
-        self.driver.find_element_by_xpath(self.SHORT_TEXT_INP).click()
-        ActionChains(self.driver).send_keys(short_text).perform()
+        item = self.driver.find_elements_by_xpath(self.TEXT_INP)[0]
+        ActionChains(self.driver).click(item).send_keys(short_text).perform()
 
-        self.driver.find_element_by_xpath(self.TEXT_INP).click()
-        ActionChains(self.driver).send_keys(text).perform()
+        item = self.driver.find_elements_by_xpath(self.TEXT_INP)[1]
+        ActionChains(self.driver).click(item).send_keys(text).perform()
 
         if not comments:
             self.driver.find_element_by_css_selector(self.FORBID_COMMENT_CHB).click()
@@ -116,8 +116,8 @@ class CreateTopicPage(AbstractPage):
         if not publish:
             self.driver.find_element_by_css_selector(self.PUBLISH_CHB).click()
 
-        self.set_add_poll_true()
         if polls:
+            self.set_add_poll_true()
             self.driver.find_element_by_css_selector(self.POLL_QUESTION_INP).send_keys(polls[0])
             self.driver.find_element_by_css_selector(self.POLL_ANSWER1_INP).send_keys(polls[1])
             self.driver.find_element_by_css_selector(self.POLL_ANSWER2_INP).send_keys(polls[2])

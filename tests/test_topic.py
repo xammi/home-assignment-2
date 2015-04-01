@@ -1,8 +1,7 @@
 # coding: utf-8
-import os
-
 __author__ = 'max'
 
+import os
 from abstract import AbstractTestCase
 from page_objects.topic import CreateTopicPage, TopicPage, Tags
 from page_objects.blog import BlogPage
